@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIdFlows.ResourceOwnerPa
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ResourceOwnerPasswordCredentialsGrantFlow", "ResourceOwnerPasswordCredentialsGrantFlow", "{B5C48935-BC13-4196-8B4A-3863049169CC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIdFlows.ResourceOwnerPasswordCredentialsGrantFlow.Sample", "OpenIdFlows.ResourceOwnerPasswordCredentialsGrantFlow.Sample\OpenIdFlows.ResourceOwnerPasswordCredentialsGrantFlow.Sample.csproj", "{2C5F16E1-0405-40F6-A585-643866F2C2EF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,11 +19,16 @@ Global
 		{14162530-D63D-485E-A0B7-D3BEF943F0EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14162530-D63D-485E-A0B7-D3BEF943F0EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14162530-D63D-485E-A0B7-D3BEF943F0EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C5F16E1-0405-40F6-A585-643866F2C2EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C5F16E1-0405-40F6-A585-643866F2C2EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C5F16E1-0405-40F6-A585-643866F2C2EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C5F16E1-0405-40F6-A585-643866F2C2EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{14162530-D63D-485E-A0B7-D3BEF943F0EE} = {B5C48935-BC13-4196-8B4A-3863049169CC}
+		{2C5F16E1-0405-40F6-A585-643866F2C2EF} = {B5C48935-BC13-4196-8B4A-3863049169CC}
 	EndGlobalSection
 EndGlobal
