@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.6
+VisualStudioVersion = 15.0.26430.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Swagger.NetCore.Api", "Swagger.NetCore.Api\Swagger.NetCore.Api.csproj", "{1D7A947D-0DE9-4158-A718-746E0AC6B758}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Swagger.NetCore.Api", "Swagger.NetCore.Api\Swagger.NetCore.Api.csproj", "{1D7A947D-0DE9-4158-A718-746E0AC6B758}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nswag.NetCore.Api", "Nswag.NetCore.Api\Nswag.NetCore.Api.csproj", "{C7989799-0017-4BE5-9A6F-8AFD16BB8948}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{1D7A947D-0DE9-4158-A718-746E0AC6B758}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D7A947D-0DE9-4158-A718-746E0AC6B758}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1D7A947D-0DE9-4158-A718-746E0AC6B758}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7989799-0017-4BE5-9A6F-8AFD16BB8948}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7989799-0017-4BE5-9A6F-8AFD16BB8948}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7989799-0017-4BE5-9A6F-8AFD16BB8948}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7989799-0017-4BE5-9A6F-8AFD16BB8948}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
