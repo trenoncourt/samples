@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{DAB855AD-5120-40E5-B614-3889252824FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trenoncourt.Common.Api", "src\Trenoncourt.Common.Api\Trenoncourt.Common.Api.csproj", "{A467F64B-60E5-4D30-9095-E6BDCA367DBB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trenoncourt.Common.Hosting", "src\Trenoncourt.Common.Hosting\Trenoncourt.Common.Hosting.csproj", "{0DA87C2B-19DB-47B1-9D4E-FEC359337744}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A467F64B-60E5-4D30-9095-E6BDCA367DBB} = {DAB855AD-5120-40E5-B614-3889252824FF}
+		{0DA87C2B-19DB-47B1-9D4E-FEC359337744} = {DAB855AD-5120-40E5-B614-3889252824FF}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A467F64B-60E5-4D30-9095-E6BDCA367DBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A467F64B-60E5-4D30-9095-E6BDCA367DBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A467F64B-60E5-4D30-9095-E6BDCA367DBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A467F64B-60E5-4D30-9095-E6BDCA367DBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DA87C2B-19DB-47B1-9D4E-FEC359337744}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DA87C2B-19DB-47B1-9D4E-FEC359337744}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DA87C2B-19DB-47B1-9D4E-FEC359337744}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DA87C2B-19DB-47B1-9D4E-FEC359337744}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
