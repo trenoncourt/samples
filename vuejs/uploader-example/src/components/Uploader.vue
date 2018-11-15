@@ -1,38 +1,26 @@
 <template>
-  <div>
-    
-<!--
-        <div v-show="$refs.upload && $refs.upload.dropActive">
-            <h3>Drop files to upload</h3>
-        </div>-->
+  <div class="upload-box">
+    <label for="uploader">
+      <slot>
+      </slot>
+    </label>
+    <file-upload
+        :post-action="postAction"
+        :multiple="true"
+        name="uploader"
+        :drop="true"
+        :drop-directory="true"
+        v-model="files"
+        @input-file="inputFile"
+        ref="upload">
 
-        <file-upload
-            class="upload-box"
-            :post-action="postAction"
-            :multiple="true"
-            :drop="true"
-            :drop-directory="true"
-            v-model="files"
-            @input-file="inputFile"
-            ref="upload">
-            
-            <slot></slot>
-
-        </file-upload>
-
-<!--
-        <button type="button" v-if="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true">
-            Start Upload
-        </button>
-        <button type="button" v-else @click.prevent="$refs.upload.active = false">
-            Stop Upload
-        </button>-->
-
+    </file-upload>
   </div>
 </template>
 
 <script>
 import FileUpload from 'vue-upload-component'
+
 export default {
   props: {
     postAction: String
@@ -40,13 +28,13 @@ export default {
   components: {
     FileUpload
   },
-  data() {
+  data () {
     return {
       files: []
     }
   },
   methods: {
-    inputFile(newFile, oldFile) {
+    inputFile (newFile, oldFile) {
       if (newFile && !oldFile) {
         this.$emit('added', newFile)
       }
@@ -60,12 +48,12 @@ export default {
 </script>
 
 <style scoped>
-.upload-box {
+  .upload-box {
     position: relative;
-    background: #eee;
     padding: 1px;
+    margin: 5px;
     width: 100%;
     height: 100%;
-    border: 2px dashed #00ADCE;
-}
+    border: 2px dashed darkgrey;
+  }
 </style>
