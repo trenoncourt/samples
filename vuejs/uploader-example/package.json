@@ -8,6 +8,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@xkeshi/image-compressor": "^0.5.3",
     "buefy": "^0.7.0",
     "vue": "^2.5.17",
     "vue-upload-component": "^2.8.15"
