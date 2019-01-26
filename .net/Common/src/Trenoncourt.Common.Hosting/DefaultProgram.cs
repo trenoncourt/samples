@@ -13,13 +13,11 @@ namespace Trenoncourt.Common.Hosting
         {
             string environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             
-            
             string urls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS");
             Log.Information("Starting application with environment {environmentName} in directory {currentDirectory}, listening at {urls}", environmentName, Directory.GetCurrentDirectory(), urls);
             
             Log.Information($"Creating & building web host");
             return webHostBuilder.Invoke().Build();
-    
         }
     }
 }
