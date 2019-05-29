@@ -1,5 +1,6 @@
 <template>
   <div>
+    <app-logo-client></app-logo-client>
     <button @click="isComponentAjouterPieceJointe = true">ok</button>
     <app-table-piece-jointe-client v-if="files.length" :files="files"></app-table-piece-jointe-client>
     <b-modal :active.sync="isComponentAjouterPieceJointe"
@@ -17,10 +18,15 @@
 
 import AjoutPieceJointeClient from './AjoutPieceJointeClient';
 import TablePieceJointeClient from './TablePieceJointeClient';
+import LogoClient from './LogoClient';
 
 export default {
   name: 'UploaderExample',
-  components: {AppAjoutPieceJointeClient: AjoutPieceJointeClient, AppTablePieceJointeClient: TablePieceJointeClient},
+  components: {
+    AppAjoutPieceJointeClient: AjoutPieceJointeClient,
+    AppTablePieceJointeClient: TablePieceJointeClient,
+    AppLogoClient: LogoClient,
+  },
   props: {},
   data() {
     return {

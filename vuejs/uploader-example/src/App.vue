@@ -3,84 +3,6 @@
     <uploader-example/>
   </div>
 
-  <!--<uploader ref="upload" post-action="" @added="fileAdded" @removed="fileRemoved" style="padding: 20px;">-->
-  <!--<div class="columns">-->
-  <!--<div class="column">-->
-  <!--<b-icon-->
-  <!--pack="fas"-->
-  <!--icon="copy"-->
-  <!--size="is-large"-->
-  <!--type="is-info">-->
-  <!--</b-icon>-->
-  <!--</div>-->
-  <!--</div>-->
-  <!--<div class="columns">-->
-  <!--<div class="column is-12 is-paddingless is-size-5 is-bold">-->
-  <!--<span class="is-bold">Ajouter vos pièces jointes</span>-->
-  <!--</div>-->
-  <!--</div>-->
-  <!--<div class="columns">-->
-  <!--<div class="column is-12 is-paddingless  is-size-6">-->
-  <!--Au format (PDF, JPG) 10 Mo maximum-->
-  <!--</div>-->
-  <!--</div>-->
-
-  <!--</uploader>-->
-
-
-  <!--<table class="table">-->
-  <!--<thead>-->
-  <!--<tr>-->
-  <!--<th>Nom du fichier</th>-->
-  <!--<th>Type</th>-->
-  <!--<th>Description</th>-->
-  <!--<th></th>-->
-  <!--</tr>-->
-  <!--</thead>-->
-  <!--<tbody>-->
-  <!--<tr v-for="file in files" :key="file.id">-->
-  <!--<td>{{file.name}}</td>-->
-  <!--<td>-->
-  <!--<b-select v-model="file.groupType" placeholder="Select a name">-->
-  <!--<option-->
-  <!--v-for="type in types"-->
-  <!--:value="type.id"-->
-  <!--:key="type.id">-->
-  <!--{{ type.label }}-->
-  <!--</option>-->
-  <!--</b-select>-->
-  <!--</td>-->
-  <!--<td>-->
-  <!--<b-input v-model="file.description"></b-input>-->
-  <!--</td>-->
-  <!--<td>-->
-  <!--<b-icon-->
-  <!--@click.native="$refs.upload.remove(file)"-->
-  <!--style="cursor: pointer;"-->
-  <!--icon="delete"-->
-  <!--size="is-medium"-->
-  <!--type="is-danger">-->
-  <!--</b-icon>-->
-  <!--</td>-->
-  <!--</tr>-->
-  <!--</tbody>-->
-  <!--</table>-->
-
-  <!--dqs-->
-  <!--<ul v-if="files.length">-->
-  <!--<li v-for="file in files" :key="file.id">-->
-  <!--<span>{{file.name}}</span> - -->
-  <!--<span>{{file.size | formatSize}}</span> - -->
-  <!--<span v-if="file.error">{{file.error}}</span>-->
-  <!--<span v-else-if="file.success">success</span>-->
-  <!--<span v-else-if="file.active">active</span>-->
-  <!--<span v-else-if="file.active">active</span>-->
-  <!--<span v-else></span>-->
-  <!--</li>-->
-  <!--</ul>-->
-  <!--<ul v-else>-->
-  <!--<h6>Drop files anywhere to upload<br/>or</h6>-->
-  <!--</ul>-->
 </template>
 
 <script>
@@ -102,5 +24,18 @@ export default {
     text-align: center;
     color: #2c3e50;
     margin-top: 60px;
+  }
+
+  .upload-box {
+    position: relative;
+    padding: 1px;
+    margin: 5px;
+    width: 100%;
+    height: 100%;
+    border: 2px dashed darkgrey;
+  }
+
+  .is-cursor-pointer {
+    cursor: pointer;
   }
 </style>

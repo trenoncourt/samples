@@ -7,7 +7,7 @@
         <p class="modal-title has-text-centered">
           Pièces jointes
         </p>
-        <uploader ref="upload" post-action="" @added="fileAdded" @removed="fileRemoved"
+        <uploader ref="upload" class="upload-box" multiple @added="fileAdded" @removed="fileRemoved"
                   style="padding: 20px;">
           <div class="columns">
             <div class="column">
@@ -78,7 +78,7 @@
             Annuler
           </button>
           <button class="button is-addOrEdit has-text-centered button-modal"
-                  @click="ajouter">
+                  @click="ajouter" :disabled="files.length">
             Ajouter
           </button>
         </div>
@@ -88,8 +88,6 @@
 </template>
 
 <script>
-/* eslint-disable */
-
 import Uploader from './Uploader.vue';
 
 export default {
