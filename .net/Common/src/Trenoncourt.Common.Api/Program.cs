@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using Trenoncourt.Common.Hosting;
+using Trenoncourt.Common.Hosting.Extensions;
 
 namespace Trenoncourt.Common.Api
 {
@@ -12,13 +13,10 @@ namespace Trenoncourt.Common.Api
         {
             try
             {
-                string environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-                
                 Log.Logger = new LoggerConfiguration()
-                    .ReadFrom.Configuration(new ConfigurationBuilder()
-                        .AddJsonFile("appsettings.json")
-                        .Build())
+                    .ReadFrom.Configuration(new ConfigurationBuilder().AddDefaultConfiguration().Build())
                     .CreateLogger();
+                
                 IWebHost webHost = DefaultProgram.LogAndRun(CreateWebHostBuilder);
                 Log.Information("Starting web host");
                 webHost.Run();
