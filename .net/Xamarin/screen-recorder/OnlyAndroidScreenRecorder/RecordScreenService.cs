@@ -5,176 +5,188 @@ using System.Text;
 
 using Android.App;
 using Android.Content;
+using Android.Hardware.Display;
 using Android.Media;
+using Android.Media.Projection;
 using Android.OS;
-using Android.Runtime;
+using Android.Util;
 using Android.Views;
 using Android.Widget;
+using Java.Lang;
+using Environment = Android.OS.Environment;
 
 namespace OnlyAndroidScreenRecorder
 {
-    public class Constants
-    {
-        public const int REGISTER_MESSENGER = 1;
-        public const int UNREGISTER_MESSENGER = 2;
-        public const int STOP_RECORD = 4;
-        public const int SEND_TO_MESSENGER = 5;
-        public const int START_RECORD = 7;
-        public const int MSG_REGISTER_ACK_READY = 9;
-        public const int MSG_REGISTER_ACK_NOT_READY = 10;
-        public const string EXTRA_SURFACE = "EXTRA_SURFACE";
-        public const string SCREEN_WIDTH = "SCREEN_WIDTH";
-        public const string SCREEN_HEIGHT = "SCREEN_HEIGHT";
-    }
-
     [Service(IsolatedProcess = true)]
     public class RecordScreenService : Service
     {
-        private Messenger _messenger;
-        List<Messenger> messengerList = new List<Messenger>();
-        CurrentState currentState = CurrentState.Ready;
-        MediaRecorder MediaRecorder;
-        IWindowManager wm;
+        private ServiceHandler _serviceHandler;
+        private BroadcastReceiver _screenStateReceiver;
+        private MediaRecorder _mediaRecorder;
+        
+        private MediaProjection _mediaProjection;
+        private VirtualDisplay _virtualDisplay;
 
-        public override IBinder OnBind(Intent intent)
+        public int ResultCode { get; set; }
+
+        public Intent Data { get; set; }
+        
+        public override IBinder OnBind(Intent intent) 
         {
-            return _messenger.Binder;
+            return null; // (no binding)
         }
-
-
+        
+        public static Intent CreateIntent(Context context, int resultCode, Intent data) 
+        {
+            Intent intent = new Intent(context, typeof(RecordScreenService));
+            intent.PutExtra("resultcode", resultCode);
+            intent.PutExtra("data", data);
+            return intent;
+        }
 
         public override void OnCreate()
         {
-            base.OnCreate();
-            //WindowManagerLayoutParams layoutParams = new WindowManager
-            //IWindowManager.LayoutParams @params = new WindowManager.LayoutParams(
-            //    WindowManager.LayoutParams.TYPE_TOAST, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-            //    | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL |
-            //    WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
-            //    PixelFormat.TRANSLUCENT);
-            //@params.gravity = Gravity.RIGHT | Gravity.TOP;
-            //@params.setTitle("Load Average");
-            //    wm = (WindowManager)getSystemService(WINDOW_SERVICE);
-            //@params.width = WindowManager.LayoutParams.WRAP_CONTENT;
-            //@params.height = WindowManager.LayoutParams.WRAP_CONTENT;
+            // run this service as foreground service to prevent it from getting killed
+            // when the main app is being closed
+            Intent notificationIntent = new Intent(this, this.GetType());
+            PendingIntent pendingIntent = PendingIntent.GetActivity(this, 0, notificationIntent, 0);
 
-            //mView = new Button(this);
-            //setViewState(VIEW_STATE_READY);
-            //mView.setOnTouchListener(new ViewTouchListener(getBaseContext(), wm, params));
-            //mView.setOnClickListener(this);
-            //wm.addView(mView, params);
-            //uiHandler = new Handler();
+            Notification notification = new Notification.Builder(this)
+                    .SetContentTitle("DataRecorder")
+                    .SetContentText("Your screen is being recorded and saved to your phone.")
+                    .SetSmallIcon(Resource.Mipmap.ic_launcher)
+                    .SetContentIntent(pendingIntent)
+                    .SetTicker("Tickertext")
+                    .Build();
+            
+            StartForeground(23, notification);
+            
+            // register receiver to check if the phone screen is on or off
+            _screenStateReceiver = new ScreenSharingBroadcastReceiver(this);
+            IntentFilter screenStateFilter = new IntentFilter();
+            screenStateFilter.AddAction(Intent.ActionScreenOn);
+            screenStateFilter.AddAction(Intent.ActionScreenOff);
+            screenStateFilter.AddAction(Intent.ActionConfigurationChanged);
+            RegisterReceiver(_screenStateReceiver, screenStateFilter);
 
-            //videoPath = initRecorder();
-            InitRecorder();
-            _messenger = new Messenger(new IncomingHandler(messengerList, MediaRecorder));
+            HandlerThread thread = new HandlerThread("ServiceStartArguments", (int) ThreadPriority.Background);
+            thread.Start();
+
+            _serviceHandler = new ServiceHandler(thread.Looper, this);
         }
 
-        private string InitRecorder()
+        public override void OnDestroy()
         {
-            MediaRecorder = new MediaRecorder();
-            MediaRecorder.SetAudioSource(AudioSource.Mic);
-            MediaRecorder.SetVideoSource(VideoSource.Surface);
-            MediaRecorder.SetOutputFormat(OutputFormat.ThreeGpp);
-
-            string videoPath = Android.OS.Environment.GetExternalStoragePublicDirectory(Android.OS.Environment.DirectoryDownloads) + string.Format("/{0}_video.3gpp", DateTime.Now.ToString("yyMMddHHmmssZ"));
-
-            MediaRecorder.SetOutputFile(file.getAbsolutePath());
-            MediaRecorder.SetVideoSize(DISPLAY_WIDTH, DISPLAY_HEIGHT);
-            MediaRecorder.SetVideoEncoder(MediaRecorder.VideoEncoder.H264);
-            MediaRecorder.SetAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-            MediaRecorder.SetVideoFrameRate(100);
-            MediaRecorder.SetVideoEncodingBitRate(4096 * 1000);
-
-            int rotation = wm.getDefaultDisplay().getRotation();
-            int orientation = 0;
-            MediaRecorder.setOrientationHint(rotation);
-            MediaRecorder.prepare();
+            StopRecording();
+            UnregisterReceiver(_screenStateReceiver);
+            StopSelf();
+            Toast.MakeText(this, "Screen sharing has been stoped", ToastLength.Short).Show();
         }
 
-        public void setViewState(CurrentState state)
+        public void StartRecording(int resultCode, Intent data) 
         {
+            MediaProjectionManager projectionManager = (MediaProjectionManager) BaseContext.GetSystemService(MediaProjectionService);
+            _mediaRecorder = new MediaRecorder();
 
-            if (state == currentState)
+            DisplayMetrics metrics = new DisplayMetrics();
+            IWindowManager wm = (IWindowManager) BaseContext.GetSystemService(WindowService);
+            wm.DefaultDisplay.GetRealMetrics(metrics);
+
+            int mScreenDensity = (int) metrics.DensityDpi;
+            int displayWidth = metrics.WidthPixels;
+            int displayHeight = metrics.HeightPixels;
+
+            _mediaRecorder.SetVideoSource(VideoSource.Surface);
+            _mediaRecorder.SetOutputFormat(OutputFormat.Mpeg4);
+            _mediaRecorder.SetVideoEncoder(VideoEncoder.H264);
+            _mediaRecorder.SetVideoEncodingBitRate(8 * 1000 * 1000);
+            _mediaRecorder.SetVideoFrameRate(15);
+            _mediaRecorder.SetVideoSize(displayWidth, displayHeight);
+
+            string videoDir = Environment.GetExternalStoragePublicDirectory(Environment.DirectoryMovies).AbsolutePath;
+            long timestamp = DateTime.Now.Ticks;
+
+            string orientation = "portrait";
+            if (displayWidth > displayHeight)
             {
-                return;
+                orientation = "landscape";
             }
-            currentState = state;
+            
+            string filePathAndName = videoDir + "/time_" + timestamp + "_mode_" + orientation + ".mp4";
 
-            switch (state)
+            _mediaRecorder.SetOutputFile(filePathAndName);
+
+            try 
             {
-                case CurrentState.Ready:
-                    mView.setVisibility(View.VISIBLE);
-                    mView.setText(R.string.start_recording);
-                    break;
-                case CurrentState.Start:
-                    mView.setVisibility(View.VISIBLE);
-                    mView.setText(R.string.stop_recording);
-                    break;
-                default:
-                    mView.setVisibility(View.GONE);
+                _mediaRecorder.Prepare();
+            } 
+            catch (IllegalStateException e) 
+            {
+            }
+            catch (System.Exception e)
+            {
+                // ignored
             }
 
-
+            _mediaProjection = projectionManager.GetMediaProjection(resultCode, data);
+            Surface surface = _mediaRecorder.Surface;
+            _virtualDisplay = _mediaProjection.CreateVirtualDisplay("MainActivity", displayWidth, displayHeight, mScreenDensity, DisplayFlags.Presentation,
+                    surface, null, null);
+            _mediaRecorder.Start();
+        }
+        
+        public void StopRecording() 
+        {
+            _mediaRecorder.Stop();
+            _mediaProjection.Stop();
+            _mediaRecorder.Release();
+            _virtualDisplay.Release();
         }
     }
-    public class IncomingHandler : Handler
-    {
-        List<Messenger> _messengerList = new List<Messenger>();
-        CurrentState currentState = CurrentState.Ready;
-        MediaRecorder MediaRecorder;
 
-        public IncomingHandler(List<Messenger> messengerList, MediaRecorder mediaRecorder)
+    public class ServiceHandler : Handler
+    {
+        private readonly RecordScreenService _service;
+
+        public ServiceHandler(Looper looper, RecordScreenService service) : base(looper)
         {
-            _messengerList = messengerList;
-            MediaRecorder = mediaRecorder;
+            _service = service;
         }
 
         public override void HandleMessage(Message msg)
         {
-            switch (msg.What)
+            if (_service.ResultCode == 1) 
             {
-                case Constants.REGISTER_MESSENGER:
-                    _messengerList.Add(msg.ReplyTo);
-
-                    if (currentState == CurrentState.Ready /* && videoPath != null */)
-                    {
-                        Message.Obtain(null, Constants.MSG_REGISTER_ACK_READY, MediaRecorder.Surface);
-                    }
-                    else
-                    {
-                        Message.Obtain(null, Constants.MSG_REGISTER_ACK_NOT_READY, null);
-                    }
-                    break;
-                case Constants.UNREGISTER_MESSENGER:
-                    _messengerList.Remove(msg.ReplyTo);
-                    break;
-                case Constants.START_RECORD:
-                    // set view state to start
-                    MediaRecorder.Start();
-                    break;
-                case Constants.SEND_TO_MESSENGER:
-
-                    foreach (var messenger in _messengerList)
-                    {
-                        try
-                        {
-                            messenger.Send(Message.Obtain(null, msg.Arg1, msg.Obj));
-                        }
-                        catch (RemoteException e)
-                        {
-                            // todo
-                        }
-                    }
-                    break;
+                _service.StartRecording(_service.ResultCode, _service.Data);
             }
         }
     }
 
-
-    public enum CurrentState
+    public class ScreenSharingBroadcastReceiver : BroadcastReceiver
     {
-        Ready = 1,
-        Start = 2
+        private readonly RecordScreenService _service;
+
+        public ScreenSharingBroadcastReceiver(RecordScreenService service)
+        {
+            _service = service;
+        }
+
+        public override void OnReceive(Context context, Intent intent)
+        {
+            string action = intent.Action;
+            switch (action)
+            {
+                case Intent.ActionScreenOn:
+                    _service.StartRecording(_service.ResultCode, _service.Data);
+                    break;
+                case Intent.ActionScreenOff:
+                    _service.StopRecording();
+                    break;
+                case Intent.ActionConfigurationChanged:
+                    _service.StopRecording();
+                    _service.StartRecording(_service.ResultCode, _service.Data);
+                    break;
+            }
+        }
     }
 }

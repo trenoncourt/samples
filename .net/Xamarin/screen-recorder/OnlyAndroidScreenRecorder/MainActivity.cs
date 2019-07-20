@@ -16,14 +16,8 @@ namespace OnlyAndroidScreenRecorder
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme.NoActionBar", MainLauncher = true)]
     public class MainActivity : AppCompatActivity
     {
-        private MediaProjection mediaProjection;
-        private MediaProjectionManager mediaProjectionManager;
-        private int resultCode;
-        private Intent resultData;
-        private VirtualDisplay virtualDisplay;
-        private SurfaceView surfaceView;
-        private int screenDensity;
-        private Surface surface;
+        private MediaProjectionManager _projectionManager;
+        private bool _isSharing = false;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -32,23 +26,25 @@ namespace OnlyAndroidScreenRecorder
 
             Android.Support.V7.Widget.Toolbar toolbar = FindViewById<Android.Support.V7.Widget.Toolbar>(Resource.Id.toolbar);
             SetSupportActionBar(toolbar);
+            
+            _projectionManager = (MediaProjectionManager) GetSystemService(MediaProjectionService);
 
-            if (savedInstanceState != null)
-            {
-                resultCode = savedInstanceState.GetInt("result_code");
-                resultData = (Intent)savedInstanceState.GetParcelable("result_data");
-            }
-
+//            if (savedInstanceState != null)
+//            {
+//                resultCode = savedInstanceState.GetInt("result_code");
+//                resultData = (Intent)savedInstanceState.GetParcelable("result_data");
+//            }
+//
             FloatingActionButton fab = FindViewById<FloatingActionButton>(Resource.Id.fab);
+//
+//            surfaceView = FindViewById<SurfaceView>(Resource.Id.surface);
+//            surface = surfaceView.Holder.Surface;
+//
+//            var metrics = new DisplayMetrics();
+//            WindowManager.DefaultDisplay.GetMetrics(metrics);
+//            screenDensity = (int) metrics.DensityDpi;
 
-            surfaceView = FindViewById<SurfaceView>(Resource.Id.surface);
-            surface = surfaceView.Holder.Surface;
-
-            var metrics = new DisplayMetrics();
-            WindowManager.DefaultDisplay.GetMetrics(metrics);
-            screenDensity = (int)metrics.DensityDpi;
-
-            mediaProjectionManager = (MediaProjectionManager)GetSystemService(MediaProjectionService);
+            _isSharing = IsServiceRunning(typeof(RecordScreenService));
 
             fab.Click += FabOnClick;
         }
@@ -69,80 +65,57 @@ namespace OnlyAndroidScreenRecorder
 
             return base.OnOptionsItemSelected(item);
         }
+        
+        private bool IsServiceRunning(Type serviceType) 
+        {
+            ActivityManager manager = (ActivityManager) GetSystemService(Context.ActivityService);
+            
+            // todo
+            foreach (ActivityManager.RunningServiceInfo service in manager.GetRunningServices(int.MaxValue)) 
+            {
+                if (service.Class.Name == serviceType.Name) 
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
         private void FabOnClick(object sender, EventArgs eventArgs)
         {
-            if (virtualDisplay == null)
-                StartScreenCapture();
+            if (!_isSharing)
+                StartActivityForResult(_projectionManager.CreateScreenCaptureIntent(), 1);
             else
                 StopScreenCapture();
         }
 
-        protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
+        protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
         {
-            if (requestCode == 1)
+            if (requestCode != 1) return;
+            
+            if (resultCode == Result.Ok) 
             {
-                if (resultCode != Result.Ok)
-                {
-                    Toast.MakeText(this, "cancel", ToastLength.Short).Show();
-                    return;
-                }
-                this.resultCode = (int)resultCode;
-                resultData = data;
-                SetUpMediaProjection();
-                SetUpVirtualDisplay();
-            }
-        }
-
-        protected override void OnSaveInstanceState(Bundle outState)
-        {
-            base.OnSaveInstanceState(outState);
-            if (resultData != null)
-            {
-                outState.PutInt("result_code", resultCode);
-                outState.PutParcelable("result_data", resultData);
-            }
-        }
-
-        private void SetUpMediaProjection()
-        {
-            mediaProjection = mediaProjectionManager.GetMediaProjection(resultCode, resultData);
-        }
-
-        private void SetUpVirtualDisplay()
-        {
-            virtualDisplay = mediaProjection.CreateVirtualDisplay("ScreenCapture",
-                surfaceView.Width, surfaceView.Height, screenDensity,
-                (DisplayFlags)VirtualDisplayFlags.AutoMirror, surface, null, null);
-        }
-
-        private void StartScreenCapture()
-        {
-            if (surface == null)
-                return;
-            if (mediaProjection != null)
-            {
-                SetUpVirtualDisplay();
-            }
-            else if (resultCode != 0 && resultData != null)
-            {
-                SetUpMediaProjection();
-                SetUpVirtualDisplay();
+                StartScreenCapture((int) resultCode, data);
             }
             else
-            {
-                // This initiates a prompt for the user to confirm screen projection.
-                StartActivityForResult(mediaProjectionManager.CreateScreenCaptureIntent(), 1);
+            {  
+                Toast.MakeText(this, "Permission Denied..", ToastLength.Short).Show();
+                _isSharing = false;
+                return;
             }
+        }
+
+        private void StartScreenCapture(int resultCode, Intent data)
+        {
+            Intent intent = RecordScreenService.CreateIntent(this, resultCode, data);
+            StartService(intent);
         }
 
         private void StopScreenCapture()
         {
-            if (virtualDisplay == null)
-                return;
-
-            virtualDisplay.Release();
-            virtualDisplay = null;
+            Intent intent = new Intent(this, typeof(RecordScreenService));
+            StopService(intent);
         }
     }
 }
