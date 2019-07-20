@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using Android.Runtime;
 using Android.App;
 using Android.Content;
 using Android.Hardware.Display;
@@ -17,7 +17,7 @@ using Environment = Android.OS.Environment;
 
 namespace OnlyAndroidScreenRecorder
 {
-    [Service(IsolatedProcess = true)]
+    [Service(Enabled = true)]
     public class RecordScreenService : Service
     {
         private ServiceHandler _serviceHandler;
@@ -36,29 +36,45 @@ namespace OnlyAndroidScreenRecorder
             return null; // (no binding)
         }
         
-        public static Intent CreateIntent(Context context, int resultCode, Intent data) 
-        {
-            Intent intent = new Intent(context, typeof(RecordScreenService));
-            intent.PutExtra("resultcode", resultCode);
-            intent.PutExtra("data", data);
-            return intent;
-        }
+        //public static Intent CreateIntent(Context context, int resultCode, Intent data) 
+        //{
+        //    Intent intent = new Intent(context, typeof(RecordScreenService));
+        //    intent.PutExtra("resultcode", resultCode);
+        //    intent.PutExtra("data", data);
+        //    return intent;
+        //}
 
         public override void OnCreate()
         {
+            Console.WriteLine("test");
             // run this service as foreground service to prevent it from getting killed
             // when the main app is being closed
             Intent notificationIntent = new Intent(this, this.GetType());
             PendingIntent pendingIntent = PendingIntent.GetActivity(this, 0, notificationIntent, 0);
 
-            Notification notification = new Notification.Builder(this)
-                    .SetContentTitle("DataRecorder")
-                    .SetContentText("Your screen is being recorded and saved to your phone.")
-                    .SetSmallIcon(Resource.Mipmap.ic_launcher)
-                    .SetContentIntent(pendingIntent)
-                    .SetTicker("Tickertext")
-                    .Build();
-            
+            var channel = new NotificationChannel("chan01", "Pedometer Service Channel", NotificationImportance.Low)
+            {
+                Description = "Foreground Service Channel"
+            };
+
+            //Notification notification = new Notification.Builder(this)
+            //        .SetContentTitle("DataRecorder")
+            //        .SetContentText("Your screen is being recorded and saved to your phone.")
+            //        .SetSmallIcon(Resource.Mipmap.ic_launcher)
+            //        .SetContentIntent(pendingIntent)
+            //        .SetTicker("Tickertext")
+            //        .Build();
+            var notificationManager = (NotificationManager)GetSystemService(NotificationService);
+            notificationManager.CreateNotificationChannel(channel);
+
+            var notification = new Notification.Builder(this, "chan01")
+                .SetContentTitle("Service")
+                .SetContentText("Running")
+                .SetSmallIcon(Resource.Mipmap.ic_launcher)
+                .SetContentIntent(pendingIntent)
+                .SetOngoing(true)
+                .Build();
+
             StartForeground(23, notification);
             
             // register receiver to check if the phone screen is on or off
@@ -73,8 +89,30 @@ namespace OnlyAndroidScreenRecorder
             thread.Start();
 
             _serviceHandler = new ServiceHandler(thread.Looper, this);
+            //StartRecording(ResultCode, Data);
         }
 
+        [return: GeneratedEnum]
+        public override StartCommandResult OnStartCommand(Intent intent, [GeneratedEnum] StartCommandFlags flags, int startId)
+        {
+            Toast.MakeText(this, "Sharing screen...", ToastLength.Short).Show();
+
+            ResultCode = intent.GetIntExtra("resultcode", 0);
+            Data = intent.GetParcelableExtra("data") as Intent;
+
+            if (ResultCode == 0 || Data == null)
+            {
+                throw new IllegalStateException("bad code or data.");
+            }
+
+            Message msg = _serviceHandler.ObtainMessage();
+            msg.Arg1 = startId;
+            _serviceHandler.SendMessage(msg);
+
+            return StartCommandResult.RedeliverIntent;
+        }
+
+        
         public override void OnDestroy()
         {
             StopRecording();
@@ -89,7 +127,7 @@ namespace OnlyAndroidScreenRecorder
             _mediaRecorder = new MediaRecorder();
 
             DisplayMetrics metrics = new DisplayMetrics();
-            IWindowManager wm = (IWindowManager) BaseContext.GetSystemService(WindowService);
+            IWindowManager wm = BaseContext.GetSystemService(WindowService).JavaCast<IWindowManager>();
             wm.DefaultDisplay.GetRealMetrics(metrics);
 
             int mScreenDensity = (int) metrics.DensityDpi;
@@ -137,10 +175,10 @@ namespace OnlyAndroidScreenRecorder
         
         public void StopRecording() 
         {
-            _mediaRecorder.Stop();
-            _mediaProjection.Stop();
-            _mediaRecorder.Release();
-            _virtualDisplay.Release();
+            _mediaRecorder?.Stop();
+            _mediaProjection?.Stop();
+            _mediaRecorder?.Release();
+            _virtualDisplay?.Release();
         }
     }
 
@@ -162,9 +200,15 @@ namespace OnlyAndroidScreenRecorder
         }
     }
 
+    //[BroadcastReceiver(Enabled = true)]
     public class ScreenSharingBroadcastReceiver : BroadcastReceiver
     {
         private readonly RecordScreenService _service;
+
+        //public ScreenSharingBroadcastReceiver()
+        //{
+
+        //}
 
         public ScreenSharingBroadcastReceiver(RecordScreenService service)
         {
@@ -173,6 +217,7 @@ namespace OnlyAndroidScreenRecorder
 
         public override void OnReceive(Context context, Intent intent)
         {
+            Console.WriteLine("receive" + intent.Action);
             string action = intent.Action;
             switch (action)
             {

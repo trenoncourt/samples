@@ -13,7 +13,7 @@ using Android.Widget;
 
 namespace OnlyAndroidScreenRecorder
 {
-    [Activity(Label = "@string/app_name", Theme = "@style/AppTheme.NoActionBar", MainLauncher = true)]
+    [Activity(Label = "@string/app_name" , Theme = "@style/AppTheme.NoActionBar", MainLauncher = true, Exported = true, Name = "OnlyAndroidScreenRecorder.OnlyAndroidScreenRecorder.MainActivity")]
     public class MainActivity : AppCompatActivity
     {
         private MediaProjectionManager _projectionManager;
@@ -93,7 +93,7 @@ namespace OnlyAndroidScreenRecorder
         protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
         {
             if (requestCode != 1) return;
-            
+
             if (resultCode == Result.Ok) 
             {
                 StartScreenCapture((int) resultCode, data);
@@ -108,13 +108,30 @@ namespace OnlyAndroidScreenRecorder
 
         private void StartScreenCapture(int resultCode, Intent data)
         {
-            Intent intent = RecordScreenService.CreateIntent(this, resultCode, data);
-            StartService(intent);
+            if (Android.Support.V4.Content.ContextCompat.CheckSelfPermission(this, Android.Manifest.Permission.WriteExternalStorage) == (int)Android.Content.PM.Permission.Granted)
+            {
+                //Intent intent = RecordScreenService.CreateIntent(this, resultCode, data);
+                var service = new Intent(this, typeof(RecordScreenService));
+                _isSharing = true;
+                service.PutExtra("resultcode", resultCode);
+                service.PutExtra("data", data);
+                StartService(service);
+                //
+                // Permission is granted
+                //
+            }
+            else
+            {
+                //
+                // Permission is denied
+                //
+            }
         }
 
         private void StopScreenCapture()
         {
             Intent intent = new Intent(this, typeof(RecordScreenService));
+            _isSharing = false;
             StopService(intent);
         }
     }
