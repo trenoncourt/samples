@@ -13,6 +13,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "only-android", "only-androi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlyAndroidScreenRecorder", "OnlyAndroidScreenRecorder\OnlyAndroidScreenRecorder.csproj", "{3BC0AC7E-3B3B-4D3F-9CC0-B2BDECC460A6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "only-ios", "only-ios", "{2B1D6461-4BCC-4188-ACD2-C10AF320F681}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlyIosScreenRecorder", "OnlyIosScreenRecorder\OnlyIosScreenRecorder.csproj", "{4C22BFDA-5874-4348-B67D-2B06D262BAE4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -95,12 +99,23 @@ Global
 		{3BC0AC7E-3B3B-4D3F-9CC0-B2BDECC460A6}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{3BC0AC7E-3B3B-4D3F-9CC0-B2BDECC460A6}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 		{3BC0AC7E-3B3B-4D3F-9CC0-B2BDECC460A6}.Release|iPhoneSimulator.Deploy.0 = Release|Any CPU
+		{4C22BFDA-5874-4348-B67D-2B06D262BAE4}.Debug|Any CPU.ActiveCfg = Debug|iPhone
+		{4C22BFDA-5874-4348-B67D-2B06D262BAE4}.Debug|iPhone.ActiveCfg = Debug|iPhone
+		{4C22BFDA-5874-4348-B67D-2B06D262BAE4}.Debug|iPhone.Build.0 = Debug|iPhone
+		{4C22BFDA-5874-4348-B67D-2B06D262BAE4}.Debug|iPhoneSimulator.ActiveCfg = Debug|iPhoneSimulator
+		{4C22BFDA-5874-4348-B67D-2B06D262BAE4}.Debug|iPhoneSimulator.Build.0 = Debug|iPhoneSimulator
+		{4C22BFDA-5874-4348-B67D-2B06D262BAE4}.Release|Any CPU.ActiveCfg = Release|iPhone
+		{4C22BFDA-5874-4348-B67D-2B06D262BAE4}.Release|iPhone.ActiveCfg = Release|iPhone
+		{4C22BFDA-5874-4348-B67D-2B06D262BAE4}.Release|iPhone.Build.0 = Release|iPhone
+		{4C22BFDA-5874-4348-B67D-2B06D262BAE4}.Release|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
+		{4C22BFDA-5874-4348-B67D-2B06D262BAE4}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3BC0AC7E-3B3B-4D3F-9CC0-B2BDECC460A6} = {C0A44847-F76A-4D2F-94F8-F2B602732ED7}
+		{4C22BFDA-5874-4348-B67D-2B06D262BAE4} = {2B1D6461-4BCC-4188-ACD2-C10AF320F681}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BE7D7E91-0B5D-4A20-91F8-1CB09BF1B5DB}
