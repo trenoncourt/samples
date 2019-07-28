@@ -60,6 +60,9 @@
     <ConsolePause>false</ConsolePause>
     <CodesignKey>iPhone Developer</CodesignKey>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
+    <AppExtensionDebugBundleId />
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
@@ -128,6 +131,20 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Entitlements.plist" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BroadcastUploadExtension\BroadcastUploadExtensionUI\BroadcastUploadExtensionUI.csproj">
+      <Project>{bf817d45-306d-4129-8568-bb975e90c8bf}</Project>
+      <Name>BroadcastUploadExtensionUI</Name>
+      <IsAppExtension>true</IsAppExtension>
+      <IsWatchApp>false</IsWatchApp>
+    </ProjectReference>
+    <ProjectReference Include="..\BroadcastUploadExtension\BroadcastUploadExtension\BroadcastUploadExtension.csproj">
+      <Project>{fe944d8c-e8c4-4c18-a01a-a02e6d5915a1}</Project>
+      <Name>BroadcastUploadExtension</Name>
+      <IsAppExtension>true</IsAppExtension>
+      <IsWatchApp>false</IsWatchApp>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>

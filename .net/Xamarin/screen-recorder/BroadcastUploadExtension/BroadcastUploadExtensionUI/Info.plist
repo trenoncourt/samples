@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
@@ -7,7 +7,7 @@
 	<key>CFBundleName</key>
 	<string>BroadcastUploadExtensionUI</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.companyname.BroadcastUploadExtensionUI</string>
+	<string>com.companyname.OnlyIosScreenRecorder.BroadcastUploadExtensionUI</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -19,7 +19,7 @@
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
 	<key>MinimumOSVersion</key>
-  <string>10.3</string>
+	<string>10.3</string>
 	<key>UIDeviceFamily</key>
 	<array>
 		<integer>3</integer>
@@ -41,4 +41,3 @@
 	</dict>
 </dict>
 </plist>
-
