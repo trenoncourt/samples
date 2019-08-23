@@ -73,7 +73,7 @@ namespace OnlyAndroidScreenRecorder
             // todo
             foreach (ActivityManager.RunningServiceInfo service in manager.GetRunningServices(int.MaxValue)) 
             {
-                if (service.Class.Name == serviceType.Name) 
+                if (service.Class.Name == serviceType.Name || service.Class.SimpleName == "RunningServiceInfo") 
                 {
                     return true;
                 }
@@ -104,6 +104,11 @@ namespace OnlyAndroidScreenRecorder
                 _isSharing = false;
                 return;
             }
+        }
+
+        protected override void OnNewIntent(Intent intent)
+        {
+            base.OnNewIntent(intent);
         }
 
         private void StartScreenCapture(int resultCode, Intent data)
