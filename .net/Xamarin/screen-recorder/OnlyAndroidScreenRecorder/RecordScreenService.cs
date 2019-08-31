@@ -181,7 +181,6 @@ namespace OnlyAndroidScreenRecorder
 
             _mediaProjection = projectionManager.GetMediaProjection(resultCode, data);
             
-            // Flow as been recorded, show it in app too
             Surface surface = _mediaRecorder.Surface;
             _virtualDisplay = _mediaProjection.CreateVirtualDisplay("MainActivity", displayWidth, displayHeight, mScreenDensity, DisplayFlags.Presentation,
                     surface, null, null);

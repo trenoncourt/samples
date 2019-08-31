@@ -113,6 +113,7 @@ namespace OnlyAndroidScreenRecorder
 
         private void StartScreenCapture(int resultCode, Intent data)
         {
+
             if (Android.Support.V4.Content.ContextCompat.CheckSelfPermission(this, Android.Manifest.Permission.WriteExternalStorage) == (int)Android.Content.PM.Permission.Granted)
             {
                 //Intent intent = RecordScreenService.CreateIntent(this, resultCode, data);
